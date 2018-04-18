@@ -82,7 +82,8 @@ a:hover{
   background-size: 200px;
 }
 
-[data-status="failed"] .game-failed, 
+[data-status="failed"] .game-failed,
+[data-status="stop"] .game-stop,
 [data-status="success"] .game-success,
 [data-status="all-success"] .game-all-success {
   display: block;

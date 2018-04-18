@@ -10,9 +10,13 @@ var GAME = {
      * @return {[type]}      [description]
      */
     init: function (opts) {
-        this.status = 'start';
+        this.status = CONFIG.status;
         this.options = opts;
+        this.level = 5;
         this.bindEvent();
+        this.score = 0;
+        let gameLevel = document.querySelector('.game-level');
+        gameLevel.innerHTML = "当前Level: "+this.level;
         return this;
     },
     bindEvent: function () {
@@ -20,8 +24,37 @@ var GAME = {
         var playBtn = document.querySelector('.js-play');
         // 开始游戏按钮绑定
         playBtn.onclick = function () {
-            self.play();
+            self.play(self.level);
         };
+        var rePlayBtn = document.querySelector('#replay');
+        // 暂停后开始游戏按钮绑定
+        rePlayBtn.onclick = function () {
+            self.replay();
+        };
+        var replayBtn = document.querySelector('.js-replay');
+        // 重新开始游戏按钮绑定
+        replayBtn.onclick = function () {
+            self.play(self.level);
+            self.score = 0;
+        };
+        var replayAllBtn = document.querySelector('.js-replay-all');
+        // 全部重新开始游戏按钮绑定
+        replayAllBtn.onclick = function () {
+            self.replayAll();
+        };
+        var nextBtn = document.querySelector('.js-next');
+        // 下一关开始游戏按钮绑定
+        nextBtn.onclick = function () {
+            self.play(self.level);
+        };
+        window.onkeydown = function (e) {
+            let key = e.keyCode || e.which || e.charCode;
+            switch (key){
+                case 80:
+                    self.switchStop(true);
+                    break;
+            }
+        }
     },
     /**
      * 更新游戏状态，分别有以下几种状态：
@@ -36,26 +69,53 @@ var GAME = {
         this.status = status;
         container.setAttribute("data-status", status);
     },
-    play: function () {
+    play: function (level) {
         this.setStatus('playing');
-        this.enemy = ENEMY.init();
+        this.enemy = ENEMY.init(level);
+        this.plane = PLANE.init();
         this.draw();
         playing();
-        this.score = 0;
+    },
+    switchStop:function (stop) {
+        if(stop){
+            if(this.status == "playing"){
+                this.setStatus("stop");
+            }
+        }else{
+            this.setStatus("playing");
+        }
+    },
+    replay:function () {
+        this.switchStop(false);
+        this.draw();
+        playing();
+    },
+    replayAll:function () {
+       this.play(CONFIG.level);
+       this.score = 0;
     },
     drawScore() {
         context.font = '18px Verdana,Arial,sans-serif';
         context.fillStyle = "#fff";
-        context.fillText('分数：' + this.score, 20, 30);
+        context.fillText('分数：' + this.score, 20, 20);
+    },
+    /**
+     * 绘制之前的事件处理
+     */
+    preDraw:function () {
+        this.judeGameStatus();
+        this.shotting();
     },
     draw: function () {
+        this.preDraw();
         this.drawScore();
-        var plane = this.getPlane();
-        plane.draw();
-        this.enemy.move();
-        if (plane.bullets) {
-            this.shotting();
-        }
+        this.drawPlane();
+        this.drawEnemy();
+    },
+    drawPlane:function () {
+        this.getPlane().draw();
+    },
+    drawEnemy:function () {
         this.enemy.draw();
     },
     getPlane: function () {
@@ -67,19 +127,47 @@ var GAME = {
         }
 
     },
+    judeGameStatus:function () {
+        if(this.enemy.enemies.length <= 0){
+            this.success();
+        }else {
+            let enemyTop = this.enemy.move();
+            if(enemyTop > this.plane.top){
+                this.setStatus('failed');
+                document.getElementsByClassName('score')[0].innerHTML = this.score;
+            }
+        }
+
+    },
+    success:function(){
+        let levelInfo = document.querySelector('#game-next-level');
+        this.setStatus('success');
+        if(this.level < CONFIG.totalLevel){
+            this.level += 1;
+            levelInfo.innerHTML = "下一个Level： "+this.level;
+        }else if(this.level == CONFIG.totalLevel){
+            this.setStatus('all-success');
+        }
+
+
+    },
     /**
      * 子弹与敌人相撞
      * 并计分
      */
     shotting: function () {
+        if (this.plane.bullets.length < 0) {
+            return;
+        }
         this.enemy.enemies.forEach((enemy) => {
             this.plane.bullets.forEach((bullet, indexBullet) => {
-                if (enemy.top + 50 > bullet.top
+                if (enemy.top + CONFIG.enemySize > bullet.top
                     && enemy.left < bullet.left
-                    && enemy.left + 50 > bullet.left) {
+                    && enemy.left + CONFIG.enemySize > bullet.left && !enemy.dead) {
                     this.plane.bullets.splice(indexBullet, 1);
                     enemy.dead = true;
                     enemy.boom = 0;
+                    enemy.src = CONFIG.enemyBoomIcon;
                     this.score += 1;
                 }
             })
@@ -97,8 +185,8 @@ var PLANE = {
         this.planeSize = CONFIG.planeSize;
         this.direct = 'right';
         this.key = null;
+        this.bullets = [];
         this.bindEvent();
-        //this.draw(context);
 
         return this;
     },
@@ -132,12 +220,18 @@ var PLANE = {
             switch (this.key) {
                 //方向键上
                 case 38:
-                    self.top -= CONFIG.planeSpeed;
+                    self.shoot();
                     break;
-                //方向键下
-                case 40:
-                    self.top += CONFIG.planeSpeed;
+               /* //方向键左上
+                case 38 && 37:
+                    self.shoot();
+                    self.left -= CONFIG.planeSpeed;
                     break;
+                //方向键右上
+                case 38 && 39:
+                    self.shoot();
+                    self.left += CONFIG.planeSpeed;
+                    break;*/
                 //方向键左
                 case 37:
                     self.left -= CONFIG.planeSpeed;
@@ -149,7 +243,6 @@ var PLANE = {
                 //空格键
                 case 32:
                     self.shoot();
-
                     break;
             }
         }
@@ -175,10 +268,9 @@ var PLANE = {
         }
     },
     draw: function () {
-        this.limitArea();
-        var self = this;
-        var image = this.getImage();
         if (this.bullets) {
+            context.lineWidth = 1;
+            context.strokeStyle = 'white';
             for (var bullet of this.bullets) {
                 if (bullet.top < 0) {
                     this.bullets.splice(this.bullets.indexOf(bullet), 1);
@@ -186,15 +278,15 @@ var PLANE = {
                 }
                 bullet.top = bullet.top - CONFIG.bulletSpeed;
                 context.beginPath();
-                context.lineWidth = 1;
-                context.strokeStyle = 'white';
                 context.moveTo(bullet.left, bullet.top);
                 context.lineTo(bullet.left, bullet.top - CONFIG.bulletSize);
                 context.closePath();
                 context.stroke();
             }
         }
-        context.drawImage(image, self.left, self.top, self.planeSize.width, self.planeSize.height);
+        this.limitArea();
+        let image = this.getImage();
+        context.drawImage(image, this.left, this.top, this.planeSize.width, this.planeSize.height);
     },
     getImage: function () {
         if (this.image) {
@@ -223,16 +315,18 @@ var PLANE = {
 
 };
 var ENEMY = {
-    init: function () {
+    init: function (level) {
         this.enemyDirection = CONFIG.enemyDirection;
         this.enemies = new Array();
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < 7*level; i++) {
             this.enemies.push({
-                left: 30 + CONFIG.enemySize * i + CONFIG.enemyGap,
-                top: 30,
+                left: 30 + CONFIG.enemySize * (i % 7)+ CONFIG.enemyGap,
+                top: 30 + (Math.floor((i / 7)) * 50),
                 boom: 0,
-                dead: false
-            })
+                dead: false,
+                src : CONFIG.enemyIcon
+            });
+
         }
         console.log(this.enemies);
         return this;
@@ -240,17 +334,15 @@ var ENEMY = {
     draw: function () {
         var image = this.getImage();
         this.enemies.forEach((enemy, index) => {
-            if (enemy.boom >= 3) {
-                this.enemies.splice(index, 1);
-            }
-
-            if (enemy.dead && enemy.boom < 3) {
+            image.src = enemy.src;
+            if (enemy.dead && enemy.boom < 10) {
+                context.drawImage(image, enemy.left, enemy.top, CONFIG.enemySize, CONFIG.enemySize);
                 enemy.boom += 1;
-                image.src = CONFIG.enemyBoomIcon;
-                context.drawImage(image, enemy.left, enemy.top, CONFIG.enemySize, CONFIG.enemySize);
             } else {
-                image.src = CONFIG.enemyIcon;
                 context.drawImage(image, enemy.left, enemy.top, CONFIG.enemySize, CONFIG.enemySize);
+            }
+            if (enemy.dead && enemy.boom >= 10) {
+                this.enemies.splice(index, 1);
             }
         });
     },
@@ -267,14 +359,14 @@ var ENEMY = {
      * 如果是向右走，获取最右边敌人的坐标，并判断是否触边
      * 如果是向左走，则判断最左边敌人是否触边。
      * 上面两个判断为触边，则整体向下移动并改变方向
-     * 如果移动到最底层，则胜利
      */
     move: function () {
         let maxLeft = canvas.width - 50 - 30;
         let minLeft = 30;
         let maxTop = canvas.height - CONFIG.planeSize.height - 30;
-
+        let enemyTop = 0;
         this.enemies.forEach((enemy) => {
+            enemyTop = enemy.top;
             if (this.enemyDirection == 'right') {
                 if (enemy.left > maxLeft) {
                     this.enemies.forEach((enemy) => {
@@ -296,7 +388,7 @@ var ENEMY = {
             }
         });
 
-        return false;
+        return enemyTop;
     }
 };
 // 初始化
@@ -333,11 +425,12 @@ var game = GAME.init(CONFIG);
 function playing() {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    game.draw();
-    if(!game.pause){
-        requestAnimFrame(playing);
+    if(game.status == 'playing'){
+        game.draw();
+        if(game.status != 'stop'){
+            requestAnimFrame(playing);
+        }
     }
-
 }
 
 
