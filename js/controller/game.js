@@ -49,7 +49,9 @@ var GAME = {
             let key = e.keyCode || e.which || e.charCode;
             switch (key){
                 case 80:
-                    self.switchStop();
+                    if(self.status == 'playing' || self.status == 'stop'){
+                        self.switchStop();
+                    }
                     break;
             }
         }
@@ -75,15 +77,11 @@ var GAME = {
         this.setStatus('playing');
         this.enemy = ENEMY.init(level);
         this.plane = PLANE.init();
-        this.drawInfo();
         this.draw();
         playing();
     },
     drawInfo:function () {
-        //暂停提示
-        context.font = '18px Verdana,Arial,sans-serif';
-        context.fillStyle = "#fff";
-        context.fillText('按P键暂停', canvas.width-100, 20);
+
     },
     /**
      * 切换暂停
@@ -92,11 +90,19 @@ var GAME = {
     switchStop:function () {
         this.stop = !this.stop;
         if(this.stop){
-            this.setStatus("stop");
+            if(this.status == "playing"){
+                this.setStatus("stop");
+            }else {
+                return;
+            }
         }else{
-            this.setStatus("playing");
-            this.draw();
-            playing();
+            if(this.status == "stop"){
+                this.setStatus("playing");
+                this.draw();
+                playing();
+            }else {
+                return;
+            }
         }
     },
     /**
@@ -106,12 +112,15 @@ var GAME = {
         this.play(CONFIG.level);
         this.score = 0;
     },
-    drawScore() {
+    drawInfo() {
         //分数
         context.font = '18px Verdana,Arial,sans-serif';
         context.fillStyle = "#fff";
         context.fillText('分数：' + this.score, 20, 20);
-
+        //暂停提示
+        context.font = '18px Verdana,Arial,sans-serif';
+        context.fillStyle = "#fff";
+        context.fillText('按P键暂停', canvas.width-100, 20);
     },
     /**
      * 绘制之前的事件处理
@@ -125,7 +134,7 @@ var GAME = {
      */
     draw: function () {
         this.preDraw();
-        this.drawScore();
+        this.drawInfo();
         this.drawPlane();
         this.drawEnemy();
     },
@@ -158,7 +167,7 @@ var GAME = {
             let enemyTop = this.enemy.move();
             if(enemyTop > this.plane.top){
                 this.setStatus('failed');
-                document.querySelector('.score')[0].innerHTML = this.score;
+                document.querySelector('.score').innerHTML = this.score;
             }
         }
 
