@@ -78,17 +78,21 @@ a:hover{
 [data-status="start"] .game-intro {
   display: block;
   padding-top: 180px;
-  background: url(./img/bg.png) no-repeat 430px 180px;
+  background: url(../img/bg.png) no-repeat 430px 180px;
   background-size: 200px;
 }
+[data-status="stop"] .game-stop {
+    display: block;
+    padding-top: 180px;
+    background-size: 200px;
 
+}
 [data-status="failed"] .game-failed,
-[data-status="stop"] .game-stop,
 [data-status="success"] .game-success,
 [data-status="all-success"] .game-all-success {
   display: block;
   padding-top: 180px;
-  background: url(./img/bg-end.png) no-repeat 380px 190px;
+  background: url(../img/bg-end.png) no-repeat 380px 190px;
   background-size: 250px;
 }
 

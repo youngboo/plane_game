@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="style/style.css">
   <style></style>
   <title>射击游戏</title>
 </head>
@@ -34,7 +34,7 @@
       <section class="game-stop game-ui">
         <h1 class="section-title">暂停游戏</h1>
         <p class="game-next-level game-info-text">游戏已暂停</p>
-        <button id="replay" class="js-replay button">继续玩</button>
+        <button class="stop-replay button">继续玩</button>
       </section>
     </div>
     <div></div>
@@ -43,7 +43,10 @@
     </canvas>
   </div>
   <!-- 主逻辑函数 -->
-  <script src="./js/config.js" ></script>
+  <script src="js/config/config.js" ></script>
+  <script src="js/model/plane.js" ></script>
+  <script src="js/model/enemy.js" ></script>
+  <script src="js/controller/game.js" ></script>
   <script src="./js/app.js" ></script>
 </body>
 </html>
