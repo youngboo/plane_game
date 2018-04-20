@@ -22,46 +22,58 @@ var PLANE = {
                 //方向键上
                 case 38:
                     self.shoot();
-                    self.moveByStatus(self.status);
+                    self.setMoveStatus(self.moveStatus);
                     break;
                 //空格键
                 case 32:
                     self.shoot();
-                    self.moveByStatus(self.status);
+                    self.setMoveStatus(self.moveStatus);
                     break;
                 //方向键左
                 case 37:
-                    self.moveByStatus('left');
+                    self.setMoveStatus('left');
                     break;
                 //方向键右
                 case 39:
-                    self.moveByStatus('right');
+                    self.setMoveStatus('right');
                     break;
                 default:
-                    self.moveStatus = 'none';
+            }
+        };
+        document.onkeyup = function (e) {
+            let keyUp = e.keyCode || e.which || e.charCode;
+            switch (keyUp){
+                case 37 :
+                    if(self.moveStatus == 'left'){
+                        self.setMoveStatus('none');
+                    }
+                    break;
+                case 39 :
+                    if(self.moveStatus == 'right'){
+                        self.setMoveStatus('none');
+                    }
+                case 32 :
+                    self.setMoveStatus(self.moveStatus);
+                    break;
+                case 38 :
+                    self.setMoveStatus(self.moveStatus);
                     break;
             }
-        }
+        };
     },
-    moveByStatus:function(status='none'){
+    setMoveStatus:function (status) {
       this.moveStatus = status;
-        if(this.moveStatus == 'left'){
-            this.movement = this.left - CONFIG.planeSpeed;
-        }
-        if(this.moveStatus == 'right'){
-            this.movement = this.left + CONFIG.planeSpeed;
-        }
     },
     /**
      * 移动并限制出界
      */
     move: function () {
        if(this.moveStatus == 'right'){
-           if(this.left < this.movement){
+           if(this.left < this.left + CONFIG.planeSpeed){
                this.left += 3;
            }
        }else if(this.moveStatus == 'left'){
-           if(this.left > this.movement){
+           if(this.left > this.left - CONFIG.planeSpeed){
                this.left -= 3;
            }
        }else{
@@ -87,10 +99,9 @@ var PLANE = {
         if (this.bullets) {
             context.lineWidth = 1;
             context.strokeStyle = 'white';
-            for (var bullet of this.bullets) {
+            this.bullets.forEach((bullet,index)=>{
                 if (bullet.top < 0) {
-                    this.bullets.splice(this.bullets.indexOf(bullet), 1);
-                    continue;
+                    this.bullets.splice(index, 1);
                 }
                 bullet.top = bullet.top - CONFIG.bulletSpeed;
                 context.beginPath();
@@ -98,15 +109,13 @@ var PLANE = {
                 context.lineTo(bullet.left, bullet.top - CONFIG.bulletSize);
                 context.closePath();
                 context.stroke();
-            }
+            })
+
         }
         if(this.moveStatus != 'none'){
             this.move();
         }
         context.drawImage(this.getImage(), this.left, this.top, this.planeSize.width, this.planeSize.height);
-
-
-
     },
     getImage: function () {
         if (this.image) {

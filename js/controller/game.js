@@ -44,13 +44,20 @@ var GAME = {
         nextBtn.onclick = function () {
             self.play(self.level);
         };
-        //暂停事件绑定
+
         window.onkeydown = function (e) {
             let key = e.keyCode || e.which || e.charCode;
             switch (key){
+                //暂停
                 case 80:
                     if(self.status == 'playing' || self.status == 'stop'){
                         self.switchStop();
+                    }
+                    break;
+                //下一关
+                case 78:
+                    if(self.status == 'success'){
+                        self.play(self.level);
                     }
                     break;
             }
@@ -126,8 +133,8 @@ var GAME = {
      * 绘制之前的事件处理
      */
     preDraw:function () {
-        this.judeGameStatus();
         this.shotting();
+        this.judeGameStatus();
     },
     /**
      * 所有需要逐帧运行和绘制的内容
@@ -139,19 +146,10 @@ var GAME = {
         this.drawEnemy();
     },
     drawPlane:function () {
-        this.getPlane().draw();
+        this.plane.draw();
     },
     drawEnemy:function () {
         this.enemy.draw();
-    },
-    getPlane: function () {
-        if (this.plane) {
-            return this.plane
-        } else {
-            this.plane = PLANE.init();
-            return this.plane;
-        }
-
     },
     /**
      * 游戏整个状态的判断
@@ -161,7 +159,13 @@ var GAME = {
      * ...
      */
     judeGameStatus:function () {
-        if(this.enemy.enemies.length <= 0){
+        let success = true;
+        this.enemy.enemies.forEach((enemy)=>{
+           if(!enemy.dead){
+              success = false;
+            }
+        });
+        if(success){
             this.success();
         }else {
             let enemyTop = this.enemy.move();
@@ -183,8 +187,11 @@ var GAME = {
         if(this.level < CONFIG.totalLevel){
             this.level += 1;
             levelInfo.innerHTML = "下一个Level： "+this.level;
-        }else if(this.level == CONFIG.totalLevel){
+        }else if(this.level >= CONFIG.totalLevel){
             this.setStatus('all-success');
+            this.level = CONFIG.level;
+        }else {
+            console.log("系统异常，请联系管理员");
         }
 
 
@@ -206,7 +213,7 @@ var GAME = {
                     enemy.dead = true;
                     enemy.boom = 0;
                     //敌人爆炸图像
-                    enemy.image.src = CONFIG.enemyBoomIcon;
+                    enemy.image = this.enemy.getBoomImage();
                     //计分
                     this.score += 1;
                 }
