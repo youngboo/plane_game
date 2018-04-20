@@ -5,32 +5,11 @@ var PLANE = {
         this.planeIcon = CONFIG.planeIcon;
         this.planeSpeed = CONFIG.planeSpeed;
         this.planeSize = CONFIG.planeSize;
-        this.direct = 'right';
-        this.move = true;
+        this.moveStatus = true;
         this.bullets = [];
         this.bindEvent();
 
         return this;
-    },
-    move: function () {
-        if (this.key != null) {
-            this.direct = '';
-            return;
-        }
-        if (this.direct == 'left') {
-            this.left--;
-            if (this.left < 0) {
-                this.direct = 'right';
-            }
-        }
-        if (this.direct == 'right') {
-            this.left++;
-            if (this.left > canvas.width) {
-                this.direct = 'left';
-            }
-
-        }
-
     },
     /**
      * 绑定键盘事件
@@ -43,30 +22,51 @@ var PLANE = {
                 //方向键上
                 case 38:
                     self.shoot();
-                    break;
-                //方向键左
-                case 37:
-                    self.left -= CONFIG.planeSpeed;
-                    self.move = true;
-                    break;
-                //方向键右
-                case 39:
-                    self.left += CONFIG.planeSpeed;
-                    self.move = true;
+                    self.moveByStatus(self.status);
                     break;
                 //空格键
                 case 32:
                     self.shoot();
+                    self.moveByStatus(self.status);
+                    break;
+                //方向键左
+                case 37:
+                    self.moveByStatus('left');
+                    break;
+                //方向键右
+                case 39:
+                    self.moveByStatus('right');
                     break;
                 default:
-                    self.move = false;
+                    self.moveStatus = 'none';
+                    break;
             }
         }
     },
+    moveByStatus:function(status='none'){
+      this.moveStatus = status;
+        if(this.moveStatus == 'left'){
+            this.movement = this.left - CONFIG.planeSpeed;
+        }
+        if(this.moveStatus == 'right'){
+            this.movement = this.left + CONFIG.planeSpeed;
+        }
+    },
     /**
-     * 限制出界
+     * 移动并限制出界
      */
-    limitArea: function () {
+    move: function () {
+       if(this.moveStatus == 'right'){
+           if(this.left < this.movement){
+               this.left += 3;
+           }
+       }else if(this.moveStatus == 'left'){
+           if(this.left > this.movement){
+               this.left -= 3;
+           }
+       }else{
+           return;
+       }
         let maxTop = canvas.height - this.planeSize.height - (this.planeSize.height + CONFIG.canvasPadding);
         let minTop = canvas.height - this.planeSize.height - CONFIG.canvasPadding;
         let maxWidth = canvas.width - this.planeSize.width - CONFIG.canvasPadding;
@@ -79,8 +79,8 @@ var PLANE = {
         if (this.left > maxWidth) {
             this.left = maxWidth;
         }
-        if (this.left < 30) {
-            this.left = 30;
+        if (this.left < CONFIG.canvasPadding) {
+            this.left = CONFIG.canvasPadding;
         }
     },
     draw: function () {
@@ -100,10 +100,12 @@ var PLANE = {
                 context.stroke();
             }
         }
-        if(this.move){
-            this.limitArea();
+        if(this.moveStatus != 'none'){
+            this.move();
         }
         context.drawImage(this.getImage(), this.left, this.top, this.planeSize.width, this.planeSize.height);
+
+
 
     },
     getImage: function () {

@@ -6,7 +6,7 @@ var ENEMY = {
     /**
      *
      * @param level 根据关卡的不同，生成不同数量的敌人
-     * @returns {ENEMY} 返回敌人
+     * @returns {ENEMY} 返回敌人对象
      */
     init: function (level) {
         this.enemyDirection = CONFIG.enemyDirection;

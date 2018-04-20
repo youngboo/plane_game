@@ -14,7 +14,7 @@ window.requestAnimFrame =
     };
 
 // 初始化
-var game = GAME.init(CONFIG);
+var game = GAME.init();
 
 //游戏逐帧循环函数
 function playing() {
