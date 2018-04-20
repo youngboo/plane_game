@@ -71,7 +71,7 @@ var ENEMY = {
                         });
                         this.enemyDirection = 'left';
                     } else {
-                        enemy.left += 2;
+                        enemy.left += CONFIG.enemySpeed;
                     }
                 } else if (this.enemyDirection == 'left') {
                     if (enemy.left < this.minLeft) {
@@ -80,7 +80,7 @@ var ENEMY = {
                         });
                         this.enemyDirection = 'right';
                     } else {
-                        enemy.left -= 2;
+                        enemy.left -= CONFIG.enemySpeed;
                     }
                 }
             }

@@ -22,22 +22,31 @@ var PLANE = {
                 //方向键上
                 case 38:
                     self.shoot();
+                    self.shootting = true;
                     self.setMoveStatus(self.moveStatus);
                     break;
                 //空格键
                 case 32:
                     self.shoot();
+                    self.shootting = true;
                     self.setMoveStatus(self.moveStatus);
                     break;
                 //方向键左
                 case 37:
                     self.setMoveStatus('left');
+                    if(self.shotting){
+                        self.shoot();
+                    }
                     break;
                 //方向键右
                 case 39:
                     self.setMoveStatus('right');
+                    if(self.shotting){
+                        self.shoot();
+                    }
                     break;
                 default:
+                    self.shootting = false;
             }
         };
         document.onkeyup = function (e) {
@@ -69,12 +78,12 @@ var PLANE = {
      */
     move: function () {
        if(this.moveStatus == 'right'){
-           if(this.left < this.left + CONFIG.planeSpeed){
-               this.left += 3;
+           if(this.left < this.left + CONFIG.planeSpeed * 3){
+               this.left += CONFIG.planeSpeed;
            }
        }else if(this.moveStatus == 'left'){
-           if(this.left > this.left - CONFIG.planeSpeed){
-               this.left -= 3;
+           if(this.left > this.left - CONFIG.planeSpeed * 3){
+               this.left -= CONFIG.planeSpeed;
            }
        }else{
            return;
