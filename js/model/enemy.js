@@ -29,7 +29,6 @@ var ENEMY = {
     },
     draw: function () {
         this.enemies.forEach((enemy) => {
-
             if (enemy.dead && enemy.boom < CONFIG.enemyBoomFrameNumber) {
                 enemy.boom += 1;
                 context.drawImage(enemy.image, enemy.left, enemy.top, CONFIG.enemySize, CONFIG.enemySize);

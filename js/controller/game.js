@@ -87,9 +87,6 @@ var GAME = {
         this.draw();
         playing();
     },
-    drawInfo:function () {
-
-    },
     /**
      * 切换暂停
      * @param stop
@@ -161,7 +158,7 @@ var GAME = {
     judeGameStatus:function () {
         let success = true;
         this.enemy.enemies.forEach((enemy)=>{
-           if(!enemy.dead){
+           if(!enemy.dead || enemy.boom < CONFIG.enemyBoomFrameNumber){
               success = false;
             }
         });
@@ -171,7 +168,7 @@ var GAME = {
             let enemyTop = this.enemy.move();
             if(enemyTop > this.plane.top){
                 this.setStatus('failed');
-                document.querySelector('.score').innerHTML = this.score;
+                this.writeScore('score');
             }
         }
 
@@ -189,12 +186,16 @@ var GAME = {
             levelInfo.innerHTML = "下一个Level： "+this.level;
         }else if(this.level >= CONFIG.totalLevel){
             this.setStatus('all-success');
+            this.writeScore('all-score');
             this.level = CONFIG.level;
         }else {
             console.log("系统异常，请联系管理员");
         }
 
 
+    },
+    writeScore:function (scoreClass) {
+        document.querySelector('.'+scoreClass).innerHTML = this.score;
     },
     /**
      * 子弹与敌人相撞
@@ -207,6 +208,7 @@ var GAME = {
         this.enemy.enemies.forEach((enemy) => {
             this.plane.bullets.forEach((bullet, indexBullet) => {
                 if (enemy.top + CONFIG.enemySize > bullet.top
+                    && enemy.top < bullet.top
                     && enemy.left < bullet.left
                     && enemy.left + CONFIG.enemySize > bullet.left && !enemy.dead) {
                     this.plane.bullets.splice(indexBullet, 1);
