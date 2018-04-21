@@ -168,6 +168,7 @@ var GAME = {
         }else {
             let maxTop = this.enemy.move();
             if(maxTop >= this.enemy.maxTop){
+                this.enemy.enemyMaxTop = maxTop;
                 this.setStatus('failed');
                 this.writeScore('score');
             }
