@@ -12,8 +12,9 @@ var GAME = {
         this.bindEvent();
         this.score = 0;
         this.stop = false;
-        let gameLevel = document.querySelector('.game-level');
-        gameLevel.innerHTML = "当前Level: "+this.level;
+        this.nextLevel = document.querySelector('#game-next-level');
+        this.gameLevel = document.querySelector('#game-level');
+        this.gameLevel.innerHTML = this.level;
         return this;
     },
     bindEvent: function () {
@@ -165,8 +166,8 @@ var GAME = {
         if(success){
             this.success();
         }else {
-            let enemyTop = this.enemy.move();
-            if(enemyTop > this.plane.top){
+            let maxTop = this.enemy.move();
+            if(maxTop >= this.enemy.maxTop){
                 this.setStatus('failed');
                 this.writeScore('score');
             }
@@ -179,11 +180,12 @@ var GAME = {
      * 没有则关数加一
      */
     success:function(){
-        let levelInfo = document.querySelector('#game-next-level');
+
         this.setStatus('success');
         if(this.level < CONFIG.totalLevel){
             this.level += 1;
-            levelInfo.innerHTML = "下一个Level： "+this.level;
+            this.writeLevel();
+            this.writeScore('now-score');
         }else if(this.level >= CONFIG.totalLevel){
             this.setStatus('all-success');
             this.writeScore('all-score');
@@ -196,6 +198,9 @@ var GAME = {
     },
     writeScore:function (scoreClass) {
         document.querySelector('.'+scoreClass).innerHTML = this.score;
+    },
+    writeLevel:function () {
+        this.nextLevel.innerHTML = this.level;
     },
     /**
      * 子弹与敌人相撞

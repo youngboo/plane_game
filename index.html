@@ -13,7 +13,7 @@
       <section class="game-intro game-ui">
         <h1 class="section-title">射击游戏</h1>
         <p class="game-desc">这是一个令人欲罢不能的射击游戏，使用 ← 和 → 操作你的飞机，使用空格（space）进行射击。一起来消灭宇宙怪兽吧！</p>
-        <p class="game-level">当前Level: 1</p>
+        <p class="game-level">当前Level: <span id="game-level"></span></p>
         <button class="js-play button">开始游戏</button>
       </section>
       <section class="game-failed game-ui">
@@ -23,7 +23,8 @@
       </section>
       <section class="game-success game-ui">
         <h1 class="section-title">游戏成功</h1>
-        <p id = "game-next-level" class="game-next-level game-info-text">下一个level</p>
+        <p  class="game-next-level game-info-text">下一个level: <span id="game-next-level"></span></p>
+        <p class="game-info-text">得分: <span class="now-score"></span></p>
         <button class="js-next button">继续游戏(n)</button>
       </section>
       <section class="game-all-success game-ui">
