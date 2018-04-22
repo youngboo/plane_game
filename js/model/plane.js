@@ -8,6 +8,7 @@ var PLANE = {
         this.maxWidth = canvas.width - this.planeSize.width - CONFIG.canvasPadding;
         this.moveStatus = true;
         this.bullets = [];
+        this.bulletSize = CONFIG.bulletSize > 50 ? 50 : CONFIG.bulletSize;
         this.bindEvent();
         return this;
     },
@@ -107,7 +108,7 @@ var PLANE = {
                 bullet.top = bullet.top - CONFIG.bulletSpeed;
                 context.beginPath();
                 context.moveTo(bullet.left, bullet.top);
-                context.lineTo(bullet.left, bullet.top - CONFIG.bulletSize);
+                context.lineTo(bullet.left, bullet.top - this.bulletSize);
                 context.closePath();
                 context.stroke();
             })

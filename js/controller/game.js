@@ -7,14 +7,20 @@ var GAME = {
      * @return {[type]}      [description]
      */
     init: function () {
-        this.status = CONFIG.status;
-        this.level = CONFIG.level;
+        this.status = CONFIG.status ? CONFIG.status : 'start';
+        this.defaultLevel = CONFIG.level ? CONFIG.level : 1;
+        this.nowLevel = this.defaultLevel;
+        if(!/^[0-9]+$/.test(CONFIG.totalLevel) || CONFIG.totalLevel < 0 || CONFIG.totalLevel > 8){
+            this.totalLevel = 6;
+        }else{
+            this.totalLevel = CONFIG.totalLevel;
+        }
         this.bindEvent();
         this.score = 0;
         this.stop = false;
         this.nextLevel = document.querySelector('#game-next-level');
         this.gameLevel = document.querySelector('#game-level');
-        this.gameLevel.innerHTML = this.level;
+        this.gameLevel.innerHTML = this.nowLevel;
         return this;
     },
     bindEvent: function () {
@@ -22,7 +28,7 @@ var GAME = {
         var playBtn = document.querySelector('.js-play');
         // 开始游戏按钮绑定
         playBtn.onclick = function () {
-            self.play(self.level);
+            self.play(self.nowLevel);
         };
         var stopRePlayBtn = document.querySelector('.stop-replay');
         // 暂停后开始游戏按钮绑定
@@ -42,7 +48,7 @@ var GAME = {
         var nextBtn = document.querySelector('.js-next');
         // 下一关开始游戏按钮绑定
         nextBtn.onclick = function () {
-            self.play(self.level);
+            self.play(self.nowLevel);
         };
 
         window.onkeydown = function (e) {
@@ -57,7 +63,7 @@ var GAME = {
                 //下一关
                 case 78:
                     if(self.status == 'success'){
-                        self.play(self.level);
+                        self.play(self.nowLevel);
                     }
                     break;
             }
@@ -113,7 +119,8 @@ var GAME = {
      * 重新开始整个游戏
      */
     replayAll:function () {
-        this.play(CONFIG.level);
+        this.nowLevel = this.defaultLevel;
+        this.play(this.nowLevel);
         this.score = 0;
     },
     drawInfo() {
@@ -179,16 +186,15 @@ var GAME = {
      * 没有则关数加一
      */
     success:function(){
-
         this.setStatus('success');
-        if(this.level < CONFIG.totalLevel){
-            this.level += 1;
+        if(this.nowLevel < this.totalLevel){
+            this.nowLevel += 1;
             this.writeLevel();
             this.writeScore('now-score');
-        }else if(this.level >= CONFIG.totalLevel){
+        }else if(this.nowLevel >= this.totalLevel){
             this.setStatus('all-success');
             this.writeScore('all-score');
-            this.level = CONFIG.level;
+            this.nowLevel = this.defaultLevel;
         }else {
             console.log("系统异常，请联系管理员");
         }
@@ -199,7 +205,7 @@ var GAME = {
         document.querySelector('.'+scoreClass).innerHTML = this.score;
     },
     writeLevel:function () {
-        this.nextLevel.innerHTML = this.level;
+        this.nextLevel.innerHTML = this.nowLevel;
     },
     /**
      * 子弹与敌人相撞
