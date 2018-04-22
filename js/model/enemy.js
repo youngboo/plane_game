@@ -86,9 +86,8 @@ var ENEMY = {
                         enemy.left -= CONFIG.enemySpeed;
                     } else if(enemy.top <= this.maxTop){
                         this.enemyDirection = 'right';
-                        this.enemies.forEach((enemy,index) => {
+                        this.enemies.forEach((enemy) => {
                             enemy.top += 50;
-                            enemy.left = CONFIG.canvasPadding + ((CONFIG.enemySize + CONFIG.enemyGap) * (index % 7));
                         });
 
                     }else {

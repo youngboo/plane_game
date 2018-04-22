@@ -5,8 +5,6 @@ var PLANE = {
         this.planeIcon = CONFIG.planeIcon;
         this.planeSpeed = CONFIG.planeSpeed;
         this.planeSize = CONFIG.planeSize;
-        this.maxTop = canvas.height - this.planeSize.height - (this.planeSize.height + CONFIG.canvasPadding);
-        this.minTop = canvas.height - this.planeSize.height - CONFIG.canvasPadding;
         this.maxWidth = canvas.width - this.planeSize.width - CONFIG.canvasPadding;
         this.moveStatus = true;
         this.bullets = [];
@@ -91,12 +89,6 @@ var PLANE = {
            return;
        }
 
-        if (this.top < this.maxTop) {
-            this.top = this.maxTop;
-        }
-        if (this.top > this.minTop) {
-            this.top = this.minTop;
-        }
         if (this.left > this.maxWidth) {
             this.left = this.maxWidth;
         }
