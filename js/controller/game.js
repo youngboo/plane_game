@@ -32,8 +32,7 @@ var GAME = {
         var replayBtn = document.querySelector('.js-replay');
         // 重新开始游戏按钮绑定
         replayBtn.onclick = function () {
-            self.play(self.level);
-            self.score = 0;
+            self.replayAll();
         };
         var replayAllBtn = document.querySelector('.js-replay-all');
         // 全部重新开始游戏按钮绑定
@@ -168,7 +167,6 @@ var GAME = {
         }else {
             let maxTop = this.enemy.move();
             if(maxTop >= this.enemy.maxTop){
-                this.enemy.enemyMaxTop = maxTop;
                 this.setStatus('failed');
                 this.writeScore('score');
             }

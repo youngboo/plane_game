@@ -1,7 +1,7 @@
 var PLANE = {
     init: function () {
         this.left = (canvas.width-CONFIG.planeSize.width) / 2;
-        this.top = canvas.height - CONFIG.planeSize.height - CONFIG.canvasPadding;
+        this.top = canvas.height - CONFIG.planeSize.height - CONFIG.canvasPadding + 10;
         this.planeIcon = CONFIG.planeIcon;
         this.planeSpeed = CONFIG.planeSpeed;
         this.planeSize = CONFIG.planeSize;
@@ -11,7 +11,6 @@ var PLANE = {
         this.moveStatus = true;
         this.bullets = [];
         this.bindEvent();
-
         return this;
     },
     /**
