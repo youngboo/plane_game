@@ -12,7 +12,7 @@ var ENEMY = {
         this.enemyDirection = CONFIG.enemyDirection;
         this.enemySize = CONFIG.enemySize ? CONFIG.enemySize : 50;
         this.enemySpeed = CONFIG.enemySpeed ? CONFIG.enemySpeed : 2;
-        this.maxLeft = canvas.width - CONFIG.enemySize - CONFIG.canvasPadding;
+        this.maxLeft = canvas.width - this.enemySize - CONFIG.canvasPadding;
         this.minLeft = CONFIG.canvasPadding;
         this.maxTop = canvas.height - CONFIG.canvasPadding *2 - CONFIG.planeSize.height;
         this.numPerLine = CONFIG.numPerLine > 9 ? 9 : CONFIG.numPerLine;
@@ -73,30 +73,31 @@ var ENEMY = {
                 if(enemy.top > maxTop){
                     maxTop = enemy.top;
                 }
-                if(this.enemyDirection == 'right') {
-                    if (enemy.left  < this.maxLeft - this.enemySpeed){
-                        enemy.left += this.enemySpeed;
-                    } else if(enemy.top <= this.maxTop){
-                        this.enemyDirection = 'left';
-                        this.enemies.forEach((enemy) => {
-                            enemy.top += 50;
-                        });
 
-                    }else {
-                        break;
-                    }
-                } else if (this.enemyDirection == 'left') {
-                    if (enemy.left > this.minLeft + this.enemySpeed) {
-                        enemy.left -= this.enemySpeed;
-                    } else if(enemy.top <= this.maxTop){
-                        this.enemyDirection = 'right';
-                        this.enemies.forEach((enemy) => {
-                            enemy.top += 50;
-                        });
+                if(enemy.top <= this.maxTop){
+                    if(this.enemyDirection == 'right'){
+                        if(enemy.left < this.maxLeft + this.enemySpeed){
+                            enemy.left += this.enemySpeed;
+                        }else{
+                            this.enemyDirection = 'left';
+                            this.enemies.forEach((enemy) => {
+                                enemy.top += 50;
+                            });
 
-                    }else {
-                        break;
+                        }
+                    }else if(this.enemyDirection == 'left'){
+                        if (enemy.left > this.minLeft -this.enemySpeed) {
+                            enemy.left -= this.enemySpeed;
+                        } else {
+                            this.enemyDirection = 'right';
+                            this.enemies.forEach((enemy) => {
+                                enemy.top += 50;
+                            });
+                        }
                     }
+
+                }else {
+                    break;
                 }
             }
             index ++;
@@ -104,7 +105,7 @@ var ENEMY = {
         return maxTop;
     },
     getMaxGap:function () {
-        let enemyGap = 0;
+        let enemyGap = CONFIG.enemyGap;
         //每行敌人的宽度
         let enemyWidth = this.enemySize * this.numPerLine + CONFIG.enemyGap*(this.numPerLine - 1);
         let maxWidth = canvas.width - CONFIG.canvasPadding * 2 - 50;

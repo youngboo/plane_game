@@ -217,10 +217,11 @@ var GAME = {
         }
         this.enemy.enemies.forEach((enemy) => {
             this.plane.bullets.forEach((bullet, indexBullet) => {
-                if (enemy.top + CONFIG.enemySize > bullet.top
-                    && enemy.top < bullet.top
-                    && enemy.left < bullet.left
-                    && enemy.left + CONFIG.enemySize > bullet.left && !enemy.dead) {
+                if (    bullet.top < enemy.top + this.enemy.enemySize
+                    &&  bullet.top > enemy.top
+                    &&  bullet.left > enemy.left
+                    &&  bullet.left < enemy.left + this.enemy.enemySize
+                    &&  !enemy.dead) {
                     this.plane.bullets.splice(indexBullet, 1);
                     enemy.dead = true;
                     enemy.boom = 0;
