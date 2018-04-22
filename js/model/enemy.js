@@ -76,23 +76,27 @@ var ENEMY = {
 
                 if(enemy.top <= this.maxTop){
                     if(this.enemyDirection == 'right'){
-                        if(enemy.left < this.maxLeft + this.enemySpeed){
+                        if(enemy.left < this.maxLeft){
                             enemy.left += this.enemySpeed;
                         }else{
                             this.enemyDirection = 'left';
                             this.enemies.forEach((enemy) => {
                                 enemy.top += 50;
+                                enemy.left -= this.enemySpeed;
                             });
-
+                            enemy.left += this.enemySpeed;
                         }
                     }else if(this.enemyDirection == 'left'){
-                        if (enemy.left > this.minLeft -this.enemySpeed) {
+                        if (enemy.left > this.minLeft) {
                             enemy.left -= this.enemySpeed;
                         } else {
+                            enemy.left = this.minLeft;
                             this.enemyDirection = 'right';
                             this.enemies.forEach((enemy) => {
                                 enemy.top += 50;
+                                enemy.left -= this.enemySpeed;
                             });
+                            enemy.left += this.enemySpeed;
                         }
                     }
 
