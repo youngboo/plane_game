@@ -123,7 +123,7 @@ var GAME = {
         this.play(this.nowLevel);
         this.score = 0;
     },
-    drawInfo() {
+    drawInfo:function () {
         //分数
         context.font = '18px Verdana,Arial,sans-serif';
         context.fillStyle = "#fff";
