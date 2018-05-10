@@ -34,12 +34,11 @@ var ENEMY = {
     draw: function () {
         this.enemies.forEach((enemy) => {
             if(enemy.top <  this.maxTop){
-                if (enemy.dead && enemy.boom < CONFIG.enemyBoomFrameNumber) {
-                    enemy.boom += 1;
+                if (enemy.boom < CONFIG.enemyBoomFrameNumber) {
                     context.drawImage(enemy.image, enemy.left, enemy.top, CONFIG.enemySize, CONFIG.enemySize);
-                }
-                if(!enemy.dead){
-                    context.drawImage(enemy.image, enemy.left, enemy.top, CONFIG.enemySize, CONFIG.enemySize);
+                    if(enemy.dead){
+                        enemy.boom += 1;
+                    }
                 }
             }
         });
@@ -80,23 +79,15 @@ var ENEMY = {
                             enemy.left += this.enemySpeed;
                         }else{
                             this.enemyDirection = 'left';
-                            this.enemies.forEach((enemy) => {
-                                enemy.top += 50;
-                                enemy.left -= this.enemySpeed;
-                            });
-                            enemy.left += this.enemySpeed;
+                            this.moveDown(enemy);
                         }
                     }else if(this.enemyDirection == 'left'){
                         if (enemy.left > this.minLeft) {
                             enemy.left -= this.enemySpeed;
                         } else {
-                            enemy.left = this.minLeft;
+                            //enemy.left = this.minLeft;
                             this.enemyDirection = 'right';
-                            this.enemies.forEach((enemy) => {
-                                enemy.top += 50;
-                                enemy.left -= this.enemySpeed;
-                            });
-                            enemy.left += this.enemySpeed;
+                            this.moveDown(enemy);
                         }
                     }
 
@@ -107,6 +98,13 @@ var ENEMY = {
             index ++;
         }
         return maxTop;
+    },
+    moveDown:function (enemy) {
+        this.enemies.forEach((enemy) => {
+            enemy.top += 50;
+            enemy.left -= this.enemySpeed;
+        });
+        enemy.left += this.enemySpeed;
     },
     getMaxGap:function () {
         let enemyGap = CONFIG.enemyGap;
