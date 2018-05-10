@@ -187,7 +187,7 @@ var GAME = {
      */
     success:function(){
         this.setStatus('success');
-        if(this.nowLevel < this.totalLevel){
+        if(this.nowLevel > 0 && this.nowLevel < this.totalLevel){
             this.nowLevel += 1;
             this.writeLevel();
             this.writeScore('now-score');
