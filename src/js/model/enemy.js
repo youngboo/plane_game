@@ -2,9 +2,10 @@
  * 把所有的敌人看作一个对象
  * @type {{init: ENEMY.init, draw: ENEMY.draw, getEnemyImage: ENEMY.getEnemyImage, move: ENEMY.move}}
  */
+import CONFIG from '../config/config'
+import {context, canvas} from '../base';
 var ENEMY = {
     /**
-     *
      * @param level 根据关卡的不同，生成不同数量的敌人
      * @returns {ENEMY} 返回敌人对象
      */
@@ -117,3 +118,4 @@ var ENEMY = {
         return enemyGap;
     }
 }
+export default ENEMY;

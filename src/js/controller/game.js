@@ -1,12 +1,17 @@
 /**
  * 整个游戏对象
  */
+import CONFIG from '../config/config';
+import PLANE from '../model/plane';
+import ENEMY from '../model/enemy';
+import {context, canvas, requestAnimFrame} from '../base';
 var GAME = {
     /**
      * 初始化函数,这个函数只执行一次
      * @return {[type]}      [description]
      */
-    init: function () {
+    init: function (container) {
+        this.container = container;
         this.status = CONFIG.status ? CONFIG.status : 'start';
         this.defaultLevel = CONFIG.level ? CONFIG.level : 1;
         this.nowLevel = this.defaultLevel;
@@ -80,7 +85,7 @@ var GAME = {
      */
     setStatus: function (status) {
         this.status = status;
-        container.setAttribute("data-status", status);
+        this.container.setAttribute("data-status", status);
     },
     /**
      * 开始游戏，需要初始化飞机和敌人
@@ -91,7 +96,17 @@ var GAME = {
         this.enemy = ENEMY.init(level);
         this.plane = PLANE.init();
         this.draw();
-        playing();
+        this.playing();
+    },
+    playing: function () {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        if(this.status == 'playing'){
+            this.draw();
+            //暂停事件
+            if(this.status != 'stop'){
+                requestAnimFrame(this.playing.bind(this));
+            }
+        }
     },
     /**
      * 切换暂停
@@ -109,7 +124,7 @@ var GAME = {
             if(this.status == "stop"){
                 this.setStatus("playing");
                 this.draw();
-                playing();
+                this.playing();
             }else {
                 return;
             }
@@ -236,3 +251,4 @@ var GAME = {
 
 };
 
+export default GAME;

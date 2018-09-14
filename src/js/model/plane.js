@@ -1,3 +1,5 @@
+import {context, canvas} from '../base';
+import CONFIG from '../config/config';
 var PLANE = {
     init: function () {
         this.left = (canvas.width-CONFIG.planeSize.width) / 2;
@@ -145,3 +147,4 @@ var PLANE = {
     }
 
 };
+export default PLANE;
